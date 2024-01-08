@@ -1,41 +1,54 @@
-let weather = {
-  paris: {
-    temp: 19.7,
-    humidity: 80,
-  },
-  tokyo: {
-    temp: 17.3,
-    humidity: 50,
-  },
-  lisbon: {
-    temp: 30.2,
-    humidity: 20,
-  },
-  "san francisco": {
-    temp: 20.9,
-    humidity: 100,
-  },
-  oslo: {
-    temp: -5,
-    humidity: 20,
-  },
-};
+function displayWeather(response) {
+  let temperatureElement = document.querySelector("#current-temperature");
+  let temperature = Math.round(response.data.temperature.current);
+  temperatureElement.innerHTML = temperature;
 
-let city = prompt(`Enter a city`);
-city = city.toLowerCase();
-
-if (weather[city] !== undefined) {
-  alert(
-    `It is currently ${Math.round(
-      weather[city].temp
-    )}°C in ${city} with a humidity of ${weather[city].humidity}%`
-  );
-} else {
-  alert(
-    `sorry, we don't know the weather for this city, try going to https://www.google.com/search?q=weather+${city}`
-  );
+  let cityElement = document.querySelector("#current-city");
+  cityElement.innerHTML = response.data.city;
 }
-let now = new Date();
-console.log(now.getHours());
 
-console.log(now.getMinutes());
+function search(event) {
+  event.preventDefault();
+  let searchInputElement = document.querySelector("#search-input");
+
+  let city = searchInputElement.value;
+  let apiKey = "dc44b0aotf0b3e03700a44f31f7ca829";
+  let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${apiKey}`;
+
+  axios.get(apiUrl).then(displayWeather);
+}
+
+function formatDate(date) {
+  let minutes = date.getMinutes();
+  let hours = date.getHours();
+  let day = date.getDay();
+
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
+
+  let days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  let formattedDay = days[day];
+  return `${formattedDay} ${hours}:${minutes}`;
+}
+
+let searchForm = document.querySelector("#search-form");
+searchForm.addEventListener("submit", search);
+
+let currentDateELement = document.querySelector("#current-date");
+let currentDate = new Date();
+
+currentDateELement.innerHTML = formatDate(currentDate);
